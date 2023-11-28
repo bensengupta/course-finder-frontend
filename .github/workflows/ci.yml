@@ -10,15 +10,15 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./actions/setup
+      - uses: ./.github/workflows/setup
       - run: pnpm lint
   prettier-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./actions/setup
+      - uses: ./.github/workflows/setup
       - run: pnpm prettier-check
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./actions/setup
+      - uses: ./.github/workflows/setup
       - run: pnpm build
