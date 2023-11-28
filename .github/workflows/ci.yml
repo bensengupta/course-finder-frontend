@@ -11,17 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/workflows/setup
+      - name: Node setup
+        uses: ./.github/workflows/setup
       - run: pnpm lint
   prettier-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/workflows/setup
+      - name: Node setup
+        uses: ./.github/workflows/setup
       - run: pnpm prettier-check
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/workflows/setup
+      - name: Node setup
+        uses: ./.github/workflows/setup
       - run: pnpm build
