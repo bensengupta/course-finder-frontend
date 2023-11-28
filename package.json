@@ -1,0 +1,32 @@
+{
+  "name": "course-finder-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint --ext .mjs,.cjs,.ts,.tsx src",
+    "prettier-check": "prettier --check src"
+  },
+  "dependencies": {
+    "d3": "^7.8.5",
+    "solid-js": "^1.8.5",
+    "tailwind-merge": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.3",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.54.0",
+    "eslint-plugin-solid": "^0.13.0",
+    "postcss": "^8.4.31",
+    "prettier-plugin-tailwindcss": "^0.5.7",
+    "tailwindcss": "^3.3.5",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.0",
+    "vite-plugin-solid": "^2.7.2"
+  }
+}
