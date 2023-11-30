@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { onMount } from "solid-js";
+import "./tree.css";
 
 interface TreeNode {
   name: string;
@@ -33,67 +33,83 @@ export function Tree() {
   const width = 960 - margin.left - margin.right;
   const height = 500 - margin.top - margin.bottom;
 
-  let ref: SVGGElement | undefined;
+  const tree = d3.tree<TreeNode>().size([height, width]);
 
-  onMount(() => {
-    const tree = d3.tree<TreeNode>().size([height, width]);
+  const hierarchy = d3.hierarchy(treeData);
+  tree(hierarchy);
+  const root = hierarchy as d3.HierarchyPointNode<TreeNode>;
 
-    const hierarchy = d3.hierarchy(treeData);
-    tree(hierarchy);
-    const root = hierarchy as d3.HierarchyPointNode<TreeNode>;
+  const svg = d3
+    .create("svg")
+    .attr("viewBox", [
+      0,
+      0,
+      width + margin.left + margin.right,
+      height + margin.top + margin.bottom,
+    ])
+    .attr("class", "tree");
 
-    const svg = d3.select(ref!);
+  const g = svg
+    .append("g")
+    .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-    const link = d3
-      .linkHorizontal<
-        d3.HierarchyPointLink<TreeNode>,
-        d3.HierarchyPointNode<TreeNode>
-      >()
-      .x((d) => d.y)
-      .y((d) => d.x);
+  const link = d3
+    .linkHorizontal<
+      d3.HierarchyPointLink<TreeNode>,
+      d3.HierarchyPointNode<TreeNode>
+    >()
+    .x((d) => d.y)
+    .y((d) => d.x);
 
-    // Draw links between nodes
-    svg
-      .selectAll(".link")
-      .data(root.links())
-      .join("path")
-      .attr("class", "link")
-      .attr("d", link);
+  // Draw links between nodes
+  const links = g
+    .selectAll(".link")
+    .data(root.links())
+    .join("path")
+    .attr("class", "link")
+    .attr("d", link);
 
-    // Draw nodes
-    const node = svg
-      .selectAll(".node")
-      .data(root.descendants())
-      .join("g")
-      .attr("class", "node")
-      .attr("transform", function (d) {
-        return "translate(" + d.y + "," + d.x + ")";
-      });
+  // Draw nodes
+  const node = g
+    .selectAll<SVGGElement, d3.HierarchyPointNode<TreeNode>>(".node")
+    .data(root.descendants())
+    .join("g")
+    .attr("class", "node")
+    .attr("transform", (d) => `translate(${d.y}, ${d.x})`);
 
-    // Add circles to represent nodes
-    node.append("circle").attr("r", 5);
+  // Add circles to represent nodes
+  node.append("circle").attr("r", 5);
 
-    // Add text labels
-    node
-      .append("text")
-      .attr("dy", ".35em")
-      .attr("x", function (d) {
-        return d.children ? -13 : 13;
-      })
-      .style("text-anchor", function (d) {
-        return d.children ? "end" : "start";
-      })
-      .text(function (d) {
-        return d.data.name;
-      });
-  });
+  // Add text labels
+  node
+    .append("text")
+    .attr("dy", ".35em")
+    .attr("x", function (d) {
+      return d.children ? -13 : 13;
+    })
+    .style("text-anchor", function (d) {
+      return d.children ? "end" : "start";
+    })
+    .text(function (d) {
+      return d.data.name;
+    });
 
-  return (
-    <svg
-      width={width + margin.left + margin.right}
-      height={height + margin.top + margin.bottom}
-    >
-      <g ref={ref} transform={`translate(${margin.left}, ${margin.top})`} />
-    </svg>
-  );
+  const zoom = d3
+    .zoom<SVGSVGElement, undefined>()
+    .extent([
+      [0, 0],
+      [width, height],
+    ])
+    .scaleExtent([1, 8])
+    .on("zoom", zoomed);
+
+  function zoomed({ transform }: d3.D3ZoomEvent<SVGSVGElement, unknown>) {
+    node.attr(
+      "transform",
+      (d) => `translate(${transform.apply([d.y, d.x]).toString()})`,
+    );
+    links.attr("transform", transform.toString());
+  }
+
+  return svg.call(zoom).node();
 }
