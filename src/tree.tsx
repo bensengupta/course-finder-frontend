@@ -77,22 +77,22 @@ export function Tree() {
     .attr("class", "node")
     .attr("transform", (d) => `translate(${d.y}, ${d.x})`);
 
-  // Add circles to represent nodes
-  node.append("circle").attr("r", 5);
+  const rectWidth = 100;
+  const rectHeight = 35;
+  node
+    .append("rect")
+    .attr("x", -rectWidth / 2)
+    .attr("y", -rectHeight / 2)
+    .attr("width", rectWidth)
+    .attr("height", rectHeight)
+    .attr("fill", "lightblue");
 
   // Add text labels
   node
     .append("text")
     .attr("dy", ".35em")
-    .attr("x", function (d) {
-      return d.children ? -13 : 13;
-    })
-    .style("text-anchor", function (d) {
-      return d.children ? "end" : "start";
-    })
-    .text(function (d) {
-      return d.data.name;
-    });
+    .attr("dx", "-3em")
+    .text((d) => d.data.name);
 
   const zoom = d3
     .zoom<SVGSVGElement, undefined>()
@@ -100,7 +100,7 @@ export function Tree() {
       [0, 0],
       [width, height],
     ])
-    .scaleExtent([1, 8])
+    .scaleExtent([0.5, 3])
     .on("zoom", zoomed);
 
   function zoomed({ transform }: d3.D3ZoomEvent<SVGSVGElement, unknown>) {
